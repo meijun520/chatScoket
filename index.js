@@ -6,12 +6,17 @@ const io = require('socket.io')(server, { transports: ['websocket'] })
 let count = 0
 let user = {}
 io.on("connection", (socket) => {
-  console.log(socket.id)
+ 
   socket.on('user', (data) => {
+    
     let id = user[data]
     count++
+    console.log(count,99999)
     if (id) {
-      io.sockets.sockets.get(id).emit('islogin', { islogin: false, user: data })
+      console.log(data,7777)
+    
+      io.to(id).emit('islogin', { islogin: false, user: data })
+      console.log(data,77577)
     }
 
     user[data] = socket.id
@@ -19,8 +24,17 @@ io.on("connection", (socket) => {
     io.emit('countmsg', count)
     socket.on('sendMsg', (data) => {
       console.log(data)
-      io.emit('pushMsg', data)
+      let now = new Date();
+      io.emit('pushMsg', data, now)
     })
+    // function tick(){
+    //   //获取当前时间的UTC表示
+    //   var now = new Date().toUTCString();
+    //   //将时间发送给所有连接上的用户端
+    //   io.emit('time',now);
+    // }
+    
+    // setInterval(tick,50000);
     socket.on('disconnect', () => {
       user[data] === socket.id ? null : user[data]
       count--
